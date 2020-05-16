@@ -1,6 +1,7 @@
 # syntax check, unit test, profiling
 flake8>=3.7.*
 pytest>=5.3.*
+twine>=3.1.*
 
 # public packages (see setup.py)
 numpy>=1.18.*
