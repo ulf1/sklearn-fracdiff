@@ -7,7 +7,7 @@ def read(fname):
 
 
 setup(name='sklearn-fracdiff',
-      version='0.1.0',
+      version='0.1.1',
       description='sklearn wrapper for numpy-fracdiff',
       long_description=read('README.md'),
       long_description_content_type='text/markdown',

@@ -13,6 +13,13 @@ pip install git+ssh://git@github.com/ulf1/sklearn-fracdiff.git
 
 
 ## Usage
+```python
+from sklearn_fracdiff import FracDiff
+obj = FracDiff(order=0.7)
+obj.fit(X)
+Z = obj.transform(X)
+```
+
 Check the [examples](http://github.com/ulf1/sklearn-fracdiff/examples) folder for notebooks.
 
 
