@@ -5,6 +5,7 @@ from numpy_fracdiff.find_truncation import find_truncation
 from numpy_fracdiff.apply_weights import apply_weights
 from typing import List
 from six.moves import collections_abc
+import warnings
 
 
 class FracDiff(BaseEstimator, TransformerMixin):
@@ -95,6 +96,10 @@ class FracDiff(BaseEstimator, TransformerMixin):
                     self.truncation.append(m)
                     self.weights.append(np.array(w))
 
+        # determine truncation
+        if self.truncation is None:
+            self.truncation = [len(w) for w in self.weights]
+
         # enforce float data type
         if self.dtype is None:
             self.dtype = X[0].dtype if isinstance(X[0], float) else float
@@ -102,6 +107,11 @@ class FracDiff(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X: np.ndarray) -> np.ndarray:
+        # warning if X is too short
+        if len(X) < max(self.truncation):
+            warnings.warn((
+                f"len(X)={len(X)} is too short for the truncation order "
+                f"m={max(self.truncation)}"))
         # multiply weights with lagged feature x
         if len(X.shape) == 1:
             Z = apply_weights(X.astype(self.dtype), self.weights[0])
