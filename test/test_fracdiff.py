@@ -21,14 +21,14 @@ def test2():
 
 def test3():
     x = np.array([10, 11, 9])
-    z = FracDiff(order=1, truncation='find').fit_transform(x)
+    z = FracDiff(order=1).fit_transform(x)
     target = np.array([np.nan, 1.0, -2.0])
     npt.assert_allclose(z, target)
 
 
 def test4():
     x = np.array([10, 11, 9])
-    z = FracDiff(order=2, truncation='find').fit_transform(x)
+    z = FracDiff(order=2).fit_transform(x)
     target = np.array([np.nan, np.nan, -3.0])
     npt.assert_allclose(z, target)
 
@@ -65,4 +65,11 @@ def test11():
     X = np.array([[10, 11, 9], [4, 6, 9]]).T
     Z = FracDiff(order=1).fit_transform(X)
     target = np.array([[np.nan, 1.0, -2.0], [np.nan, 2.0, 3.0]]).T
+    npt.assert_allclose(Z, target)
+
+
+def test12():
+    X = np.array([[10, 11, 9], [10, 11, 9]]).T
+    Z = FracDiff(order=[1, 2]).fit_transform(X)
+    target = np.array([[np.nan, 1.0, -2.0], [np.nan, np.nan, -3.0]]).T
     npt.assert_allclose(Z, target)

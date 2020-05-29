@@ -19,6 +19,7 @@ setup(name='sklearn-fracdiff',
       install_requires=[
           'setuptools>=40.0.0',
           'numpy>=1.18.*',
+          'six>=1.13.*',
           'scikit-learn>=0.22.*',
           'numpy-fracdiff>=0.3.1'],
       python_requires='>=3.6',
