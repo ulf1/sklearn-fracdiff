@@ -3,6 +3,8 @@ import numpy as np
 from numpy_fracdiff.frac_weights import frac_weights
 from numpy_fracdiff.find_truncation import find_truncation
 from numpy_fracdiff.apply_weights import apply_weights
+from typing import List
+from six.moves import collections_abc
 
 
 class FracDiff(BaseEstimator, TransformerMixin):
@@ -19,19 +21,19 @@ class FracDiff(BaseEstimator, TransformerMixin):
     y : default=None
         not used
 
-    order : float or list of float, default=1.0
+    order : float or List[float], default=1.0
         Fractal order
 
-    weights : list or list of lists, default=None
-        Precomputed weighting scheme for the given fractal order.
-        - `len(weights)==truncation`
-        - It's the ouput of `numpy_fracdiff.frac_weights`
-
-    truncation : int or list of int, default=None
+    truncation : int or List[int], default=None
         Truncation order or 'window'. How many past observations are used to
         compute one fractal difference value.
         - `len(weights)==truncation`
         - It's used in `numpy_fracdiff.frac_weights` to limit the for loop.
+
+    weights : list or List[List[float]], default=None
+        Precomputed weighting scheme for the given fractal order.
+        - `len(weights)==truncation`
+        - It's the ouput of `numpy_fracdiff.frac_weights`
 
     tau : float, default=1e-5
         The acceptable truncation error to determine the truncation order.
@@ -47,12 +49,13 @@ class FracDiff(BaseEstimator, TransformerMixin):
         Return another data type, e.g., np.float32
 
     """
-    def __init__(self, order: float = 1.0, weights: list = None,
-                 truncation: int = None, tau: float = 1e-5, mmax: int = 20000,
+    def __init__(self,
+                 order: List[float] = None,
+                 truncation: List[int] = None,
+                 weights: List[List[float]] = None,
+                 tau: float = 1e-5,
+                 mmax: int = 20000,
                  dtype=None):
-        # error checking
-        if order is None:
-            raise Exception('order must be a real positive number d>0')
         # store attributes
         self.order = order
         self.weights = weights
@@ -60,16 +63,36 @@ class FracDiff(BaseEstimator, TransformerMixin):
         self.tau = tau
         self.mmax = mmax
         self.dtype = dtype
-
+        self.n_features = None
+    
     def fit(self, X: np.ndarray, y=None):
+        # store the number of features
+        self.n_features = 1 if len(X.shape) == 1 else X.shape[1]
+
+        # convert self.order to list
+        if isinstance(self.order, (float, int)):
+            self.order = [self.order for _ in range(self.n_features)]
+        # convert self.truncation to list
+        if isinstance(self.truncation, (float, int)):
+            self.truncation = [self.truncation for _ in range(self.n_features)]
+        # convert self.weights to List[List]
+        if isinstance(self.weights, collections_abc.Iterable):
+            if not isinstance(self.weights[0], collections_abc.Iterable):
+                self.weights = [np.array(self.weights) for _ in range(self.n_features)]
+
         # determine weights
         if self.weights is None:
-            if isinstance(self.truncation, int):
-                self.weights = frac_weights(self.order, self.truncation)
-            else:  # 'find' or None
-                self.truncation, self.weights = find_truncation(
-                    self.order, tau=self.tau, mmax=self.mmax)
-        self.weights = np.array(self.weights)
+            if isinstance(self.truncation, collections_abc.Iterable):
+                self.weights = [
+                    np.array(frac_weights(o, m)) for o, m 
+                    in zip(self.order, self.truncation)]
+            else:  # None
+                self.truncation = []
+                self.weights = []
+                for o in self.order:
+                    m, w = find_truncation(o, tau=self.tau, mmax=self.mmax)
+                    self.truncation.append(m)
+                    self.weights.append(np.array(w))
 
         # enforce float data type
         if self.dtype is None:
@@ -80,12 +103,12 @@ class FracDiff(BaseEstimator, TransformerMixin):
     def transform(self, X: np.ndarray) -> np.ndarray:
         # multiply weights with lagged feature x
         if len(X.shape) == 1:
-            Z = apply_weights(X.astype(self.dtype), self.weights)
+            Z = apply_weights(X.astype(self.dtype), self.weights[0])
         else:
             Z = np.empty(shape=X.shape)
-            for j in range(X.shape[1]):
+            for j in range(self.n_features):
                 Z[:, j] = apply_weights(
-                    X[:, j].astype(self.dtype), self.weights)
+                    X[:, j].astype(self.dtype), self.weights[j])
         return Z
 
     # def inverse_transform(self, Z: np.ndarray) -> np.ndarray:
