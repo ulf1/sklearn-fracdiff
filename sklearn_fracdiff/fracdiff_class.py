@@ -82,6 +82,9 @@ class FracDiff(BaseEstimator, TransformerMixin):
                 self.weights = [
                     np.array(self.weights) for _ in range(self.n_features)]
 
+        # limit mmax to X
+        self.mmax = min(len(X) - 1, self.mmax)
+
         # determine weights
         if self.weights is None:
             if isinstance(self.truncation, collections_abc.Iterable):
