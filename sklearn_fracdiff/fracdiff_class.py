@@ -67,7 +67,7 @@ class FracDiff(BaseEstimator, TransformerMixin):
             if isinstance(self.truncation, int):
                 self.weights = frac_weights(self.order, self.truncation)
             else:  # 'find' or None
-                _, self.weights = find_truncation(
+                self.truncation, self.weights = find_truncation(
                     self.order, tau=self.tau, mmax=self.mmax)
         self.weights = np.array(self.weights)
 
