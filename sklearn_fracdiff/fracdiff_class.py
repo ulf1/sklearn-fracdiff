@@ -46,6 +46,13 @@ class FracDiff(BaseEstimator, TransformerMixin):
         The upper bound for backtracking the truncation order.
         - It limits the for loop in `numpy_fracdiff.find_truncation`
 
+    chop : str or int, default=None
+        Method how to trim NaNs
+        - None (default)
+        - 'truncation' -- trims max(self.truncation) rows
+        - 'mmax' -- trims self.mmax rows. It gives more control
+        - int -- specify the number of rows to trim
+
     dtype : np.dtype, default=None
         Return another data type, e.g., np.float32
 
@@ -56,6 +63,7 @@ class FracDiff(BaseEstimator, TransformerMixin):
                  weights: List[List[float]] = None,
                  tau: float = 1e-5,
                  mmax: int = 20000,
+                 chop: str = None,
                  dtype=None):
         # store attributes
         self.order = order
@@ -63,6 +71,7 @@ class FracDiff(BaseEstimator, TransformerMixin):
         self.truncation = truncation
         self.tau = tau
         self.mmax = mmax
+        self.chop = chop
         self.dtype = dtype
         self.n_features = None
 
@@ -83,7 +92,7 @@ class FracDiff(BaseEstimator, TransformerMixin):
                     np.array(self.weights) for _ in range(self.n_features)]
 
         # limit mmax to X
-        self.mmax = min(len(X) - 1, self.mmax)
+        self.mmax = min(len(X), self.mmax)
 
         # determine weights
         if self.weights is None:
@@ -123,6 +132,15 @@ class FracDiff(BaseEstimator, TransformerMixin):
             for j in range(self.n_features):
                 Z[:, j] = apply_weights(
                     X[:, j].astype(self.dtype), self.weights[j])
+        # chop NaN rows
+        if isinstance(self.chop, int):
+            Z = Z[self.chop:]
+        elif isinstance(self.chop, str):
+            if self.chop == 'mmax':
+                Z = Z[self.mmax:]
+            elif self.chop == 'truncation':
+                Z = Z[max(self.truncation):]
+        # done
         return Z
 
     # def inverse_transform(self, Z: np.ndarray) -> np.ndarray:
