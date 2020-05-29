@@ -67,6 +67,7 @@ def test11():
     target = np.array([[np.nan, 1.0, -2.0], [np.nan, 2.0, 3.0]]).T
     npt.assert_allclose(Z, target)
 
+
 def test12():
     X = np.array([[10, 11, 9], [10, 11, 9]]).T
     Z = FracDiff(order=[1, 2]).fit_transform(X)

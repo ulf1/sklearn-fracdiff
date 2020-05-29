@@ -64,7 +64,7 @@ class FracDiff(BaseEstimator, TransformerMixin):
         self.mmax = mmax
         self.dtype = dtype
         self.n_features = None
-    
+
     def fit(self, X: np.ndarray, y=None):
         # store the number of features
         self.n_features = 1 if len(X.shape) == 1 else X.shape[1]
@@ -78,13 +78,14 @@ class FracDiff(BaseEstimator, TransformerMixin):
         # convert self.weights to List[List]
         if isinstance(self.weights, collections_abc.Iterable):
             if not isinstance(self.weights[0], collections_abc.Iterable):
-                self.weights = [np.array(self.weights) for _ in range(self.n_features)]
+                self.weights = [
+                    np.array(self.weights) for _ in range(self.n_features)]
 
         # determine weights
         if self.weights is None:
             if isinstance(self.truncation, collections_abc.Iterable):
                 self.weights = [
-                    np.array(frac_weights(o, m)) for o, m 
+                    np.array(frac_weights(o, m)) for o, m
                     in zip(self.order, self.truncation)]
             else:  # None
                 self.truncation = []
