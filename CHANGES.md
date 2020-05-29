@@ -3,6 +3,7 @@
   * Unit tests added
   * save fitted truncation parameter
   * fit and transform multiple time series separately
+  * trim/chop NaN values
 
 # 0.1.1 / 2020-05-26
 
