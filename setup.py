@@ -1,16 +1,11 @@
 from setuptools import setup
-
-
-def read(fname):
-    import os
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+import pypandoc
 
 
 setup(name='sklearn-fracdiff',
       version='0.1.1',
       description='sklearn wrapper for numpy-fracdiff',
-      long_description=read('README.md'),
-      long_description_content_type='text/markdown',
+      long_description=pypandoc.convert('README.md', 'rst'),
       url='http://github.com/ulf1/sklearn-fracdiff',
       author='Ulf Hamster',
       author_email='554c46@gmail.com',
@@ -23,4 +18,4 @@ setup(name='sklearn-fracdiff',
           'scikit-learn>=0.22.*',
           'numpy-fracdiff>=0.3.1'],
       python_requires='>=3.6',
-      zip_safe=False)
+      zip_safe=True)
