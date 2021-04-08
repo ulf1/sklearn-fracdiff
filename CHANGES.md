@@ -1,3 +1,7 @@
+# 0.2.1 / 2021-04-08
+
+  * MIT License changed to Apache 2.0
+
 # 0.2.0 / 2020-05-29
 
   * Unit tests added
