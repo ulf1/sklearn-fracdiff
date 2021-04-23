@@ -1,4 +1,6 @@
 [![PyPI version](https://badge.fury.io/py/sklearn-fracdiff.svg)](https://badge.fury.io/py/sklearn-fracdiff)
+[![sklearn-fracdiff](https://snyk.io/advisor/python/sklearn-fracdiff/badge.svg)](https://snyk.io/advisor/python/sklearn-fracdiff)
+
 
 # sklearn-fracdiff
 
