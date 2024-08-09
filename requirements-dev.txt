@@ -1,7 +1,10 @@
 # syntax check, unit test, profiling
-setuptools>=56.0.0
+setuptools>=70.0.0
 flake8>=3.8.4
 pytest>=6.2.1
 twine==3.3.0
 pypandoc>=1.5
 wheel>=0.31.0
+requests>=2.32.2 # not directly required, pinned by Snyk to avoid a vulnerability
+urllib3>=2.2.2 # not directly required, pinned by Snyk to avoid a vulnerability
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
